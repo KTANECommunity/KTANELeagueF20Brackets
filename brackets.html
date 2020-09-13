@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Brackets</title>
+
+        <!-- Bootstrap and jQuery -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" href="css/main.css"/>
+        <script src="js/common.js"></script>
+
+        <script>
+            function setupPage() {
+                makeBrackets(matches);
+            }
+
+            function makeBrackets(matches) {
+                let categoryList = {};
+                for (let match of matches) {
+                    let category = match["category"];
+                    if (category === null || category === undefined) {
+                        continue;
+                    }
+                    if (!(category in categoryList)) {
+                        categoryList[category] = [];
+                    }
+                    categoryList[category].push(match);
+                }
+                var categoryNames = {};
+                var categoryShorthands = {};
+                for (let category of categories) {
+                    categoryNames[category["id"]] = category["name"];
+                    categoryShorthands[category["id"]] = category["shorthand"];
+                }
+                for (let category in categoryList) {
+                    $("#brackets").append($("<h1>", {"id": category}).text(categoryNames[category]));
+                    $("#brackets").append(makeBracket(categoryList[category]));
+                    $("#sidebar").append($("<a>", {"href": `#${category}`}).text(categoryShorthands[category]));
+                }
+            }
+
+            function makeBracket(matches) {
+                var bracket = {"none": {"none": []}};
+                for (var match of matches) {
+                    let matchGroup = match["match-group"];
+                    let group = match["group"];
+                    if (matchGroup !== undefined && matchGroup !== null) {
+                        if (!(matchGroup in bracket)) {
+                            bracket[matchGroup] = {"none": []};
+                        }
+                        if (group !== undefined && group !== null) {
+                            if (!(group in bracket[matchGroup])) {
+                                bracket[matchGroup][group] = [];
+                            }
+                        }
+                    } else {
+                        if (group !== undefined && group !== null) {
+                            if (!(group in bracket["none"])) {
+                                bracket["none"][group] = [];
+                            }
+                        }
+                    }
+                }
+
+                for (var match of matches.sort((a, b) => a.id > b.id)) {
+                    let matchGroup = match["match-group"];
+                    if (!(matchGroup !== undefined && matchGroup !== null)) {
+                        matchGroup = "none";
+                    }
+                    let group = match["group"];
+                    if (!(group !== undefined && group !== null)) {
+                        group = "none";
+                    }
+                    bracket[matchGroup][group].push(makeMatchCard(match, false));
+                }
+
+                for (let matchGroupName in bracket) {
+                    if (bracket[matchGroupName]["none"] !== undefined && bracket[matchGroupName]["none"].length === 0) {
+                        delete bracket[matchGroupName]["none"];
+                    }
+                }
+                if (Object.keys(bracket["none"]).length === 0) {
+                    delete bracket["none"];
+                }
+
+                var result = $("<div>", {"class": "bracket"});
+                for (var matchGroup of Object.keys(bracket).sort()) {
+                    let name = matchGroup;
+                    if (matchGroup === "none" || matchGroup === null || matchGroup === undefined) {
+                        name = "Unsorted";
+                    }
+                    let deck;
+                    if (Object.keys(bracket[matchGroup]).length > 1 || Object.keys(bracket[matchGroup]) != "none") {
+                        deck = $("<div>", {"class": "bracket-week bracket-week-groups"});
+                        deck.append($("<h3>", {"class": "match-group-title"}).text(name));
+                        for (let group of Object.keys(bracket[matchGroup]).sort()) {
+                            let groupName = group;
+                            if (group === "none" || group === null || group === undefined) {
+                                groupName = "No Group";
+                            } else {
+                                groupName = groupName;
+                            }
+                            let cardGroup = $("<aside>", {"class": "group-col bracket-group card-deck"});
+                            cardGroup.append($("<div>", {"class": "group-title"}).append($("<h6>").text(`${groupName}`)));
+                            for (let card of bracket[matchGroup][group]) {
+                                cardGroup.append(card);
+                            }
+                            deck.append(cardGroup);
+                        }
+                    } else {
+                        deck = $("<div>", {"class": "group-col bracket-week"});
+                        deck.append($("<h3>", {"class": "match-group-title"}).text(name));
+                        for (let card of bracket[matchGroup][Object.keys(bracket[matchGroup])[0]]) {
+                            deck.append(card);
+                        }
+                    }
+                    result.append(deck);
+                }
+                return result;
+            }
+        </script>
+    </head>
+    <body>
+        <!-- Import Navbar -->
+        <div id="navbar-placeholder" class="container"></div>
+
+        <div id="sidebar" class="icon-bar"></div>
+
+        <div id="brackets"></div>
+    </body>
+</html>

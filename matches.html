@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matches</title>
+
+    <!-- Bootstrap and jQuery -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src= "https://player.twitch.tv/js/embed/v1.js"></script>
+
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/matchpage.css" />
+    <script src="js/common.js"></script>
+
+    <style>
+        .check-back-later {
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            font-size: 30px;
+        }
+
+        .check-back-later div {
+            display: inline-block;
+            margin-top: 50px;
+        }
+    </style>
+
+    <script>
+        function hashChange() {
+            setupPage(200);
+        }
+
+        function setupPage(animationDuration) {
+            animationDuration = animationDuration || 0;
+            $("#matches-page").hide();
+            $("#match-info").hide();
+            $("#sidebar").empty();
+            $("#twitch-embed").empty();
+            if (/^#([A-Za-z\-0-9 ,._]+)$/.exec(decodeURI(window.location.hash))) {
+                let matchId = RegExp.$1;
+                let match = matches.filter(m => m["id"] === matchId)[0];
+                if (matchId === "TEST") {
+                    match = {
+                        "id": "MI1X-F",
+                        "match-group": "Week 1",
+                        "group": null,
+                        "category": "ModdedEFM",
+                        "stream-channel": "monstercat",
+                        "date": null,
+                        "status": "live",
+                        "competitors": [
+                            "ZekNikZ",
+                            "billybao"
+                        ],
+                        "bombs": [
+                        {
+                            "template": "moddedStandard",
+                            "type": "modpoolsA",
+                            "seed": "4197321",
+                            "mission": "861204",
+                            "rule-seed": null,
+                            "times": [
+                            {
+                                "competitor": "ZekNikZ",
+                                "time-left": "0:00.00",
+                                "strikes": 2,
+                                "solved-modules": 7,
+                                "log-link": "https://drive.google.com/open?id=1JxsfCWbJmvfpjXGoKrRfB6rsj22rx5DS",
+                                "vod-link": null
+                            },
+                            {
+                                "competitor": "billybao",
+                                "time-left": "0:00.00",
+                                "strikes": 0,
+                                "solved-modules": 8,
+                                "log-link": "https://drive.google.com/open?id=1O3VKDa7m-sy5e_x4mtUmb0pyoNOsEn8R",
+                                "vod-link": null
+                            }
+                            ],
+                            "winner": "billybao"
+                        },
+                        {
+                            "template": "moddedStandard",
+                            "type": "modpoolsB",
+                            "seed": "1973052",
+                            "mission": "813219",
+                            "rule-seed": null,
+                            "times": [
+                            {
+                                "competitor": "ZekNikZ",
+                                "time-left": "2:48.95",
+                                "strikes": 2,
+                                "solved-modules": 10,
+                                "log-link": "https://drive.google.com/open?id=1JxsfCWbJmvfpjXGoKrRfB6rsj22rx5DS",
+                                "vod-link": null
+                            },
+                            {
+                                "competitor": "billybao",
+                                "time-left": "1:59.12",
+                                "strikes": 1,
+                                "solved-modules": 10,
+                                "log-link": "https://drive.google.com/open?id=1O3VKDa7m-sy5e_x4mtUmb0pyoNOsEn8R",
+                                "vod-link": null
+                            }
+                            ],
+                            "winner": "ZekNikZ"
+                        },
+                        {
+                            "template": "moddedStandard",
+                            "type": "modpoolsEven",
+                            "seed": "318",
+                            "mission": "986471",
+                            "rule-seed": null,
+                            "times": [
+                            {
+                                "competitor": "ZekNikZ",
+                                "time-left": "1:00.26",
+                                "strikes": 3,
+                                "solved-modules": 7,
+                                "log-link": "https://drive.google.com/open?id=1JxsfCWbJmvfpjXGoKrRfB6rsj22rx5DS",
+                                "vod-link": null
+                            },
+                            {
+                                "competitor": "billybao",
+                                "time-left": "0:00.93",
+                                "strikes": 3,
+                                "solved-modules": 9,
+                                "log-link": "https://drive.google.com/open?id=1O3VKDa7m-sy5e_x4mtUmb0pyoNOsEn8R",
+                                "vod-link": null
+                            }
+                            ],
+                            "winner": "billybao"
+                        }
+                        ],
+                        "winner": "billybao",
+                        "eliminations": null,
+                        "connection": null
+                    };
+                }
+                if (match) {
+                    setupMatchInfo(match);
+                    $("#match-info").show(animationDuration);
+                    return;
+                }
+            }
+            //$("#players-page").empty();
+            setupMatchesPage();
+            $("#matches-page").show(animationDuration);
+        }
+
+        function setupMatchInfo(match) {
+            $("#sidebar").append($("<a>", { href: "#", class: "fa fa-angle-left" }));
+
+            let competitors = match["competitors"];
+            let winners = match["winner"];
+            let status = match["status"];
+            let matchCategory = match["category"];
+            let bombs = match["bombs"];
+
+            let competitorType;
+            for (let category of categories) {
+                if (category["id"] === matchCategory) {
+                    competitorType = category["participant-type"];
+                    break;
+                }
+            }
+
+            if (winners === undefined || winners === null) {
+                winners = [];
+            } else if (winners.constructor !== Array) {
+                winners = [winners];
+            }
+            let showWinner = false;
+            if (status === "complete") {
+                showWinner = true;
+            }
+
+            $(".competitor-list").empty();
+
+            if (competitors.length === 2) {
+                $(".match-name").html(`${(showWinner && winners.includes(competitors[0])) ? '<i class="fa fa-trophy"></i> ' : ""}<a href="${competitorType}s.html#${competitors[0]}">${competitors[0]}</a> vs. <a href="${competitorType}s.html#${competitors[1]}">${competitors[1]}</a>${(showWinner && winners.includes(competitors[1])) ? ' <i class="fa fa-trophy"></i>' : ""}`);
+                $(".match-name").removeClass("hidden");
+                $(".match-name-id").text(`Match ${match["id"]}`);
+                $(".competitor-list").addClass("partial-hidden");
+            } else if (competitors.length > 2) {
+                $(".match-name").addClass("hidden");
+                $(".match-name-id").text(`Match ${match["id"]}`);
+                $(".competitor-list").removeClass("partial-hidden");
+            } else {
+                // TODO: Error
+            }
+            for (let competitor of competitors) {
+                $(".competitor-list").append($("<h2>", {class: "competitor-name"}).html(`<a href="${competitorType}s.html#${competitor}">${competitor}</a>${(showWinner && winners.includes(competitor)) ? ' <i class="fa fa-trophy"></i>' : ""}`));
+            }
+
+            $(".bomb-links").empty();
+            let bombNum = 0;
+            for (let bomb of bombs) {
+                $("#sidebar").append($("<button>").text(`B${++bombNum}`).click({ "match": match, "bomb": bomb, "bombNum": bombNum }, changeBombSelection));
+                $(".bomb-links").append($("<button>", { class: "btn btn-light", "data-bomb": bombNum }).text(`Bomb ${bombNum}`).click({ "match": match, "bomb": bomb, "bombNum": bombNum }, changeBombSelection));
+            }
+
+            let streamChannel = match["stream-channel"];
+            if (status === "live" && streamChannel) {
+                let options = {
+                    channel: streamChannel,
+                    layout: "video"
+                };
+                let player = new Twitch.Player("twitch-embed", options);
+                player.setVolume(0.5);
+            }
+
+            changeBombSelection({ data: { "match": match, "bomb": bombs[0], "bombNum": 1 } });
+        }
+        
+        function changeBombSelection(event) {
+            let match = event.data["match"];
+            let bomb = event.data["bomb"];
+            let bombNum = event.data["bombNum"];
+
+            $(".bomb-info").empty();
+            $(".bomb-module-pools").empty();
+            $(".bomb-results").empty();
+
+            if (bomb === null || bomb === undefined) return;
+
+            $(".bomb-links button").removeClass("selected");
+            $(`.bomb-links button[data-bomb~=${bombNum}]`).addClass("selected");
+
+
+            let bombTemplateId = bomb["template"];
+            let bombTemplate = bombTemplates.filter(bt => bt.id == bombTemplateId)[0];
+
+            let competitorType;
+            for (let category of categories) {
+                if (category["id"] === match["category"]) {
+                    competitorType = category["participant-type"];
+                    break;
+                }
+            }
+
+            // Bomb Info
+            let row1 = $("<div>", {class: "row"});
+            let row2 = $("<div>", {class: "row"});
+            row1.append($("<div>", {class: "col-6 col-md-3 info"}).text(bombTemplate["time"]));
+            row1.append($("<div>", {class: "col-6 col-md-3 info"}).text(`${bombTemplate["strikes"]} strikes`));
+            row1.append($("<div>", {class: "col-6 col-md-3 info"}).text(`${bombTemplate["widgets"]} widgets`));
+            row1.append($("<div>", {class: "col-6 col-md-3 info"}).text(`${bombTemplate["modules"]} modules`));
+
+            if (match["status"] === "complete") {
+                if (bomb["rule-seed"]) {
+                    row2.append($("<div>", {class: "col-6 col-md-4 info"}).text(`Seed: ${bomb["seed"]}`));
+                    row2.append($("<div>", {class: "col-6 col-md-4 info"}).text(`Rule Seed: ${bomb["rule-seed"]}`));
+                    row2.append($("<div>", {class: "col-12 col-md-4 info"}).text(`Mission Name: ${bomb["mission"]}`));
+                } else {
+                    row2.append($("<div>", {class: "col-6 info"}).text(`Seed: ${bomb["seed"]}`));
+                    row2.append($("<div>", {class: "col-6 info"}).text(`Mission Name: ${bomb["mission"]}`));
+                }
+            } else {
+                row2.append($("<div>", {class: "col-12 info-hidden"}).text(`Mission Information Hidden`));
+            }
+
+            $(".bomb-info").append(row1);
+            $(".bomb-info").append(row2);
+
+            // Component Pools
+            $(".bomb-module-pools").append($("<h1>").text("Module Pools"));
+
+            let bombType = bomb["type"];
+
+            if (bombType === "custom" || bombType === null) {
+                for (let modPool of bombTemplate["module-pools"]) {
+                    let modList = $("<div>", {class: "module-pool row"});
+                    modList.append($("<h4>", {class: "header col-12"}).text(`${modPool["count"]} from...`));
+                    for (var module of modPool["modules"]) {
+                        var moduleListing = $("<a>", { href: `https://ktane.timwi.de/HTML/${encodeModuleName(module)}.html`, class: "module-listing col-12 col-md-6 col-lg-6 col-xl-6 bg-light" });
+                        moduleListing.append($("<img>", { src: `https://ktane.timwi.de/Icons/${encodeModuleName(module)}.png`, class: "module-image" }));
+                        moduleListing.append(module);
+                        modList.append(moduleListing);
+                    }
+                    $(".bomb-module-pools").append(modList);
+                }
+            } else {
+                let competitorList = competitorType === "player" ? players : teams;
+
+                let moduleDist = bombType === "modpoolsA" ? 0.7 : bombType === "modpoolsB" ? 0.3 : 0.5;
+                for (let i = 0; i < 2; i++) {
+                    let competitor = match["competitors"][i];
+                    let other = match["competitors"][1-i];
+                    let modList = $("<div>", {class: "module-pool row"});
+                    modList.append($("<h4>", {class: "header col-12"}).text(`${Math.round((i === 0 ? moduleDist : 1 - moduleDist) * bombTemplate["modules"])} from...`));
+                    let veto = competitorList.filter(c => c.name === other)[0]["vetoed-modules"][competitor];
+                    for (var module of competitorList.filter(c => c.name === competitor)[0]["modded-modules"]) {
+                        if (module === veto) continue;
+                        var moduleListing = $("<a>", { href: `https://ktane.timwi.de/HTML/${encodeModuleName(module)}.html`, class: "module-listing col-12 col-md-6 col-lg-6 col-xl-6 bg-light" });
+                        moduleListing.append($("<img>", { src: `https://ktane.timwi.de/Icons/${encodeModuleName(module)}.png`, class: "module-image" }));
+                        moduleListing.append(module);
+                        modList.append(moduleListing);
+                    }
+                    $(".bomb-module-pools").append(modList);
+                }   
+            }
+
+            // Results
+            let winners = match["winner"];
+            if (winners === undefined || winners === null) {
+                winners = [];
+            } else if (winners.constructor !== Array) {
+                winners = [winners];
+            }
+            $(".bomb-results").append($("<h1>").text("Results"));
+            if (match["status"] === "complete") {
+                for (let time of bomb["times"]) {
+                    let competitor = time["competitor"];
+                    let matchResult = $("<div>", {class: "match-result row"});
+                    matchResult.append($("<div>", {class: "col-12 competitor"}).html(`<a href="${competitorType}s.html#${competitor}">${competitor} ${bomb["winner"] === competitor ? ' <i class="fa fa-trophy"></i>' : ""}</a>`));
+                    matchResult.append($("<div>", {class: "col-4"}).html(`${time["time-left"]}`));
+                    matchResult.append($("<div>", {class: "col-4"}).html(`${time["strikes"]} strikes`));
+                    matchResult.append($("<div>", {class: "col-4"}).html(`${time["solved-modules"]}/${bombTemplate["modules"]} modules`));
+                    $(".bomb-results").append(matchResult);
+                }
+            } else {
+                $(".bomb-results").append($("<div>", {class: "info-hidden"}).text("Results Hidden"));
+            }
+        }
+
+        let pageSetup = false;
+        let matchCards = [];
+        let categorySelections = {};
+        function setupMatchesPage() {
+            for (let category of categories) {
+                categorySelections[category["id"]] = true;
+                $("#sidebar").append($("<button>", { "data-category": category["id"] }).text(category["shorthand"]).click({ "category": category }, toggleSelection));
+            }
+
+            if (pageSetup) return;
+
+            for (let match of matches.sort(dynamicSort("match-group"))) {
+                let card = makeMatchCard(match, true);
+                $(".match-list").append(card);
+                matchCards.push([match, card]);
+            }
+
+            pageSetup = true;
+        }
+
+        function toggleSelection(event) {
+            let category = event.data["category"]["id"];
+            categorySelections[category] = !categorySelections[category];
+            for (let matchTuple of matchCards) {
+                matchTuple[1].removeClass("disabled");
+                let ctg = matchTuple[0]["category"];
+                if (categorySelections[ctg]) {
+                    continue;
+                }
+                matchTuple[1].addClass("disabled");
+            }
+            if (categorySelections[category]) {
+                $(`#sidebar [data-category=${category}]`).removeClass("disabled");
+            } else {
+                $(`#sidebar [data-category=${category}]`).addClass("disabled");
+            }
+        }
+
+        window.onhashchange = hashChange;
+    </script>
+</head>
+<body data-spy="scroll" data-target=".icon-bar" data-offset="50">
+    <!-- Import Navbar -->
+    <div id="navbar-placeholder" class="container"></div>
+
+    <div id="sidebar" class="icon-bar"></div>
+
+    <div id="match-info" class="page">
+        <h1 class="match-name"></h1>
+        <h1 class="match-name-id"></h1>
+        <div class="competitor-list"></div>
+
+        <div class="text-center">
+            <div id="twitch-embed"></div>
+        </div>
+
+        <div class="text-center">
+            <div class="bomb-links btn-group d-none d-sm-block" role="group"></div>
+            <div class="bomb-links btn-group-vertical d-sm-none" role="group"></div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12 bomb-info"></div>
+            </div>
+            <div class="row">
+                <div class="col-6 bomb-module-pools"></div>
+                <div class="col-6 bomb-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="matches-page" class="page">
+        <h1>Matches</h1>
+        <div class="match-list"></div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,170 @@
+.match-list {
+    padding: 0 15px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.match-list .match-card {
+    margin: 5px;
+    flex-grow: 1;
+}
+
+.match-name {
+    font-size: 400%;
+    margin-top: 76px;
+}
+
+.match-name a,.competitor-list a {
+    color: #212529 !important;
+}
+
+.match-name.hidden+.match-name-id {
+    font-size: 400%;
+    margin-top: 76px;
+}
+
+.competitor-list {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.competitor-list .competitor-name {
+    flex-grow: 1;
+    margin: 5px;
+    text-align: center;
+}
+
+@media(max-width: 767px) {
+    .match-name {
+        display: none;
+    }
+    .match-name-id {
+        font-size: 400%;
+        margin-top: 76px;
+    }
+}
+
+.hidden {
+    display: none;
+}
+
+@media(min-width: 768px) {
+    .competitor-list.partial-hidden {
+        display: none;
+    }
+}
+
+.bomb-links button {
+    font-size: 20px;
+    background-color: #e4e4e4;
+}
+
+.bomb-links button.selected{
+    font-size: 20px;
+    background-color: lightgray;
+}
+
+#twitch-embed {
+    text-align: center;
+}
+
+.flexbox {
+    display: flex;
+}
+
+.flex-item {
+    flex: 1;
+}
+
+.bomb-info {
+    background-color: lightgray;
+    padding: 10px;
+}
+
+.bomb-info .info, .bomb-info .info-hidden {
+    text-align: center;
+    font-size: 150%;
+}
+
+.bomb-info .info-hidden {
+    font-style: italic;
+    color: gray;
+}
+/*
+.mod-list {
+    width: 95%;
+    max-width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+@media(max-width: 767px) {
+    .mod-list {
+        margin-bottom: 65px;
+    }
+}
+
+@media(min-width: 768px) {
+    .mod-list {
+        margin-bottom: 20px;
+    }
+}
+*/
+.bomb-module-pools .module-image {
+    float: left;
+    margin-right: 4px;
+    margin: auto 4px auto 0;
+}
+
+.bomb-module-pools .module-listing {
+    border: 1px solid gray;
+    border-radius: 3px;
+    margin: 1px auto;
+    padding: 2px;
+}
+
+.bomb-module-pools .module-listing:hover {
+    text-decoration: none;
+}
+
+.module-pool .module-listing {
+    color: black;
+}
+
+.module-listing a {
+    color: lightgray;
+    font-style: italic;
+}
+
+.header {
+    text-align: center;
+    color: gray;
+    font-style: italic;
+    margin-top: 10px;
+}
+
+.bomb-results {
+    overflow: hidden;
+}
+
+.bomb-results .info-hidden {
+    text-align: center;
+    font-size: 300%;
+    font-style: italic;
+    color: gray;
+    background-color: #eeeeee;
+    padding-top: 20px;
+    height: 100%;
+}
+
+.match-result {
+    text-align: center;
+    border: 1px solid gray;
+    border-radius: 3px;
+    margin: 1px auto;
+    padding: 2px;
+}
+
+.match-result .competitor a {
+    color: #212529 !important;
+}
